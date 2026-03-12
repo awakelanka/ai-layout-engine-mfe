@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLayoutStore, type LayoutContext } from './store';
-import { Layout, Eye, Cpu, AlignLeft } from 'lucide-react';
+import { Layout, Eye, Cpu, AlignLeft, Sparkles, X } from 'lucide-react';
 
 export default function App() {
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
   const { context, heatmapDensity, sidebarVisible, navPosition, cardGrid, setContext, simulateHeatmap } = useLayoutStore();
 
   // Listen to integration API events from the parent application securely
@@ -21,9 +22,61 @@ export default function App() {
   }, [setContext]);
 
   return (
-    <div className={`h-screen w-screen flex transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
-      ${navPosition === 'TOP' ? 'flex-col' : navPosition === 'BOTTOM' ? 'flex-col-reverse' : 'flex-row'}
-    `}>
+    <>
+      {/* Welcome Modal Overlay */}
+      {showWelcomeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md transition-opacity duration-500">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-full mx-4 relative transform transition-all duration-500 animate-in fade-in zoom-in-95">
+            <button 
+              onClick={() => setShowWelcomeModal(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
+              aria-label="Close modal"
+            >
+              <X size={20} />
+            </button>
+            <div className="flex flex-col items-center text-center gap-4 mb-6 pt-4">
+              <div className="p-4 bg-gradient-to-tr from-blue-100 to-indigo-50 text-blue-600 rounded-2xl shadow-inner border border-blue-100/50">
+                <Sparkles size={32} />
+              </div>
+              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">
+                Welcome to the Adaptive Layout Engine ✨
+              </h2>
+            </div>
+            
+            <p className="text-slate-600 leading-relaxed mb-8 text-center px-2">
+              This experiment demonstrates how interfaces can feel alive and responsive to your needs. Instead of static pages, you'll see a UI that fluidly morphs and reorganizes itself based on context.
+            </p>
+            
+            <div className="bg-slate-50/80 rounded-2xl p-6 mb-8 border border-slate-100/60 shadow-sm">
+              <h3 className="font-semibold text-slate-800 mb-5 flex items-center gap-2">
+                <Layout size={18} className="text-blue-500" />
+                What to try:
+              </h3>
+              <ul className="space-y-5 text-sm text-slate-600">
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0 font-bold text-xs mt-0.5 shadow-sm">1</div>
+                  <span>Toggle between <strong className="text-slate-800">Focus Mode</strong> and <strong className="text-slate-800">Dashboard Mode</strong> to see how the layout shifts to prioritize different tasks.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center flex-shrink-0 font-bold text-xs mt-0.5 shadow-sm">2</div>
+                  <span>Click <strong className="text-slate-800">Simulate Heatmap</strong> to watch the interface adapt dynamically to simulated user attention.</span>
+                </li>
+              </ul>
+            </div>
+            
+            <button 
+              onClick={() => setShowWelcomeModal(false)}
+              className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]"
+            >
+              Start Exploring
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className={`h-screen w-screen flex transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
+        ${navPosition === 'TOP' ? 'flex-col' : navPosition === 'BOTTOM' ? 'flex-col-reverse' : 'flex-row'}
+      `}>
       {/* Dynamic Navigation/Header */}
       <nav className={`
         bg-foreground text-background shadow-md flex items-center p-4 transition-all duration-700
@@ -104,5 +157,6 @@ export default function App() {
         </main>
       </div>
     </div>
+    </>
   );
 }
